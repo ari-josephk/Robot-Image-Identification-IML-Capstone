@@ -1,6 +1,8 @@
-import pickle
+import os
 import pandas as pd
 import torch
+from torch.utils.data import DataLoader
+from robot_image_dataset import Robot_Image_Dataset
 
 outfile = 'submission.csv'
 
@@ -10,11 +12,21 @@ titles = ['ID', 'FINGER_POS_1', 'FINGER_POS_2', 'FINGER_POS_3', 'FINGER_POS_4', 
          'FINGER_POS_7', 'FINGER_POS_8', 'FINGER_POS_9', 'FINGER_POS_10', 'FINGER_POS_11', 'FINGER_POS_12']
 preds = []
 
-test_data = torch.load('./test/test/testX.pt')
+dataset = Robot_Image_Dataset(os.path.join(os.path.dirname(__file__),'data_lazy'))
+data_loader = DataLoader(dataset, batch_size=64, shuffle=True)
+
+print(next(iter(data_loader))[0][0].shape)
+
+
+
+"""
+test_data = torch.load(os.path.join(os.getcwd(),'data','test','test','testX.pt'))
 file_ids = test_data[-1]
 rgb_data = test_data[0]
 
-"""
+print(test_data[0].shape)
+
+
 model.eval()
 
 for i, data in enumerate(rgb_data):
