@@ -35,6 +35,8 @@ class Robot_Image_CNN(nn.Module):
         self.optimizer = torch.optim.SGD(self.parameters(), 0.01, 0.5)
         self.get_loss = RMSELoss()
 
+        self.to(self.DEVICE)
+
     def forward(self, x):
         #create the architecture for the model
         x = self.relu(self.conv2D1(x))
@@ -58,8 +60,6 @@ class Robot_Image_CNN(nn.Module):
             data = torch.concat((img0, img1, img2), 1)
 
             data, target = data.to(self.DEVICE), target.to(self.DEVICE)
-
-            print("Using DEVICE:{}".format(self.DEVICE))
 
             self.optimizer.zero_grad()
             output = self(data)

@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 from robot_image_dataset import Robot_Image_Dataset
 from robot_image_cnn import Robot_Image_CNN
 
-print(torch.version.cuda)
+print('Found CUDA Version: {}'.format(torch.version.cuda))
 
 outfile = 'submission.csv'
 
