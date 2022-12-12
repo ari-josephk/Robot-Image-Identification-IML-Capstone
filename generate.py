@@ -3,6 +3,9 @@ import pandas as pd
 import torch
 from torch.utils.data import DataLoader
 from robot_image_dataset import Robot_Image_Dataset
+from robot_image_cnn import Robot_Image_CNN
+
+print(torch.version.cuda)
 
 outfile = 'submission.csv'
 
@@ -15,7 +18,8 @@ preds = []
 dataset = Robot_Image_Dataset(os.path.join(os.path.dirname(__file__),'data_lazy'))
 data_loader = DataLoader(dataset, batch_size=64, shuffle=True)
 
-print(next(iter(data_loader))[0][0].shape)
+model = Robot_Image_CNN(use_img0=True, use_img1=True, use_img2=True)
+model.train(1, data_loader)
 
 
 

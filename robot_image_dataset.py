@@ -31,19 +31,20 @@ class Robot_Image_Dataset(Dataset):
 
     def transform_img0(self, img):
         img = self.make_tensor(img)
-        return self.img0_normalize(img)
+        return self.img0_normalize(img).double()
 
     def transform_img1(self, img):
         img = self.make_tensor(img)
-        return self.img1_normalize(img)
+        return self.img1_normalize(img).double()
 
     def transform_img2(self, img):
         img = self.make_tensor(img)
-        return self.img2_normalize(img)
+        return self.img2_normalize(img).double()
     
     def transform_depths(self, depths):
-        depths = self.make_tensor(depths)
-        return self.depth_divide(depths)
+        
+        depths = self.make_tensor(depths).swapaxes(0,1)
+        return self.depth_divide(depths).double()
     
 
     def __len__(self):
