@@ -6,6 +6,9 @@ from robot_image_dataset import Robot_Image_Dataset
 from robot_image_cnn import Robot_Image_CNN
 
 BATCH_SIZE = 64
+USE_IMG0 = True
+USE_IMG1 = True
+USE_IMG2 = True
 
 print('Found CUDA Version: {}'.format(torch.version.cuda))
 
@@ -19,7 +22,7 @@ titles = ['ID', 'FINGER_POS_1', 'FINGER_POS_2', 'FINGER_POS_3', 'FINGER_POS_4', 
 dataset = Robot_Image_Dataset(os.path.join(os.path.dirname(__file__),'data_lazy'))
 data_loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 
-model = Robot_Image_CNN(use_img0=True, use_img1=True, use_img2=False)
+model = Robot_Image_CNN(use_img0=USE_IMG0, use_img1=USE_IMG1, use_img2=USE_IMG2)
 model.train(data_loader)
 
 

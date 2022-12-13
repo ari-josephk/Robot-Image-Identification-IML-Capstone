@@ -12,13 +12,26 @@ class RMSELoss(nn.Module):
         loss = torch.sqrt(self.mse(yhat,y) + self.eps)
         return loss
 
+class MinPool2d(nn.Module):
+    def __init__(self, kernel_size):
+        super().__init__()
+        self.maxpool = nn.MaxPool2d(kernel_size=kernel_size)
+
+    def forward(self, x):
+        return self.maxpool(-1 * x) * -1
+
+
 class Robot_Image_CNN(nn.Module):
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    POOL_KERNEL_SIZE = 3
+    CONV_FEATURE = 56
+    FC_FEATURE = 224
+    CONV_KERNEL_SIZE = 16
 
-    def __init__(self, use_img0 = True, use_img1 = True, use_img2=True, conv_feature = 56, fc_feature = 28, output_size = 12):
+    def __init__(self, use_img0 = True, use_img1 = True, use_img2=True, output_size = 12):
         super(Robot_Image_CNN, self).__init__()
         input_channels = (4 if use_img0 else 0) + (4 if use_img1 else 0) + (4 if use_img2 else 0)
-        fcn_input_size = 157304
+        fcn_input_size = 18144 #TODO: Compute automatically
 
         self.use_img0 = use_img0
         self.use_img1 = use_img1
@@ -26,14 +39,16 @@ class Robot_Image_CNN(nn.Module):
 
         #define our functions
         self.flatten = nn.Flatten()
-        self.sigmoid = nn.Sigmoid()
-        self.log_softmax = nn.LayerNorm((1, 12))
-        self.conv2D1 = nn.Conv2d(input_channels, conv_feature, kernel_size= 5)
-        self.conv2D2 = nn.Conv2d(conv_feature, conv_feature, kernel_size= 5)
-        self.maxpool2D = nn.MaxPool2d(kernel_size=2)
+        self.tanh = nn.Tanh()
+        self.relu = nn.ReLU()
+        self.leaky_relu = nn.LeakyReLU()
 
-        self.linear1 = nn.Linear(fcn_input_size, fc_feature)
-        self.linear2 = nn.Linear(fc_feature, output_size)
+        self.conv2D1 = nn.Conv2d(input_channels, self.CONV_FEATURE, kernel_size=self.CONV_KERNEL_SIZE)
+        self.conv2D2 = nn.Conv2d(self.CONV_FEATURE, self.CONV_FEATURE, kernel_size=self.CONV_KERNEL_SIZE)
+        self.maxpool2D = MinPool2d(kernel_size=self.POOL_KERNEL_SIZE)
+
+        self.linear1 = nn.Linear(fcn_input_size, self.FC_FEATURE)
+        self.linear2 = nn.Linear(self.FC_FEATURE, output_size)
 
         self.double()
 
@@ -44,12 +59,12 @@ class Robot_Image_CNN(nn.Module):
 
     def forward(self, x):
         #create the architecture for the model
-        x = self.sigmoid(self.conv2D1(x))
+        x = self.leaky_relu(self.conv2D1(x))
         x = self.maxpool2D(x)
-        x = self.sigmoid(self.conv2D2(x))
+        x = self.leaky_relu(self.conv2D2(x))
         x = self.maxpool2D(x) 
         x = self.flatten(x)
-        x = self.sigmoid(self.linear1(x))
+        x = self.leaky_relu(self.linear1(x))
         return self.linear2(x)
 
     def train(self, train_loader, epoch = 0):
