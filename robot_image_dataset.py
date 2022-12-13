@@ -17,6 +17,8 @@ class Robot_Image_Dataset(Dataset):
     def __init__(self, path, train=True):
         path = os.path.join(path, 'train' if train else 'test')
 
+        self.train = train
+
         self.pathX = os.path.join(path, 'X')
         self.pathY = os.path.join(path, 'Y')
 
@@ -62,6 +64,6 @@ class Robot_Image_Dataset(Dataset):
 
         field_id = pkl.load(open(os.path.join(self.pathX, f, 'field_id.pkl'), 'rb'))
 
-        finger_positions = np.load(os.path.join(self.pathY, f + '.npy'))
+        finger_positions = np.load(os.path.join(self.pathY, f + '.npy')) if self.train else np.array([])
 
         return (img0, img1, img2, depth, field_id), finger_positions
