@@ -4,7 +4,9 @@ import numpy as np
 
 '''
 MinPool2d
-Simple implementation of minpooling, using pytorch's maxpool
+Simple implementation of minpooling, using pytorch's maxpool. 
+Because the images are a dark subject on a light background, I expected this 
+to work slightly better than Maxpool
 
 Params
     kernel_size - the size of the window to take a min over
@@ -46,8 +48,8 @@ class Robot_Image_CNN(nn.Module):
     POOL_KERNEL_SIZE = 3
     CONV1_CHANNELS = 64
     CONV2_CHANNELS = 128
-    CONV2_CHANNELS = 256
-    CONV2_CHANNELS = 512
+    CONV3_CHANNELS = 256
+    CONV4_CHANNELS = 512
     LEARNING_RATE = 1e-4
     FC_FEATURE = 4096
     CONV_KERNEL_SIZE = 3
